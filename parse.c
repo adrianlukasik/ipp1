@@ -177,7 +177,7 @@ void makeInstruction(char *data, int i) {
                 // czyli nie ma zer wiodących
                 if (indexLastZero == indexSpace) {
                     if (isEnergy(data, indexSpace + 1, i - 1))
-                        doRightInstruction(data, lenOrder(ENERGY), indexSpace);
+                        doRightInstruction(data, indexSpace, ENERGY);
                     else
                         incorrectLine();
                     // sprawdzamy czy dla liczb z przedziału [lenOrder(ENERGY), indexSpace - 1] mamy historie
@@ -186,7 +186,7 @@ void makeInstruction(char *data, int i) {
                     // jesli tak to odpalamy funkcje w p.p. incorrectLine
                 } else {
                     if (isEnergy(data, indexLastZero + 1, i - 1))
-                        doRightInstruction(data, lenOrder(ENERGY), indexSpace);
+                        doRightInstruction(data, indexSpace, ENERGY);
                     else
                         incorrectLine();
                     // mamy zera wiodace
