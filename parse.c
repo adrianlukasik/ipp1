@@ -130,8 +130,6 @@ void doTestowania(int i) {
     printf("do testowania %d\n", i);
 }
 
-/* Zwraca wartość indeksu tablicy data, w której znajduje się najbliższa spacja,
- * jeśli taki indeks nie istnieje zwraca 0. */
 int nextSpace(char *data, int i, int j) {
     for (int k = i; k <= j; k++)
         if (data[k] == ' ')
@@ -139,7 +137,6 @@ int nextSpace(char *data, int i, int j) {
     return 0;
 }
 
-/* Zwraca pozycję ostatniego zera w tablicy data. */
 int lastZero(char *data, int i, int j) {
     for (int k = i; k <= j; k++)
         if (data[k] != '0')
@@ -151,15 +148,17 @@ void rightInstruction(Order order, Parameters p, Tree t) {
     switch (order) {
         case DECLARE:
             declareHistory(t, p->history_a, p->size_a);
+            fprintf(stdout, "OK\n");
             break;
         case REMOVE:
             removeHistory(t, p->history_a, p->size_a);
+            fprintf(stdout, "OK\n");
             break;
         case VALID:
             if (validHistory(t, p->history_a, p->size_a))
-                fprintf(stdin, "YES\n");
+                fprintf(stdout, "YES\n");
             else
-                fprintf(stdin, "NO\n");
+                fprintf(stdout, "NO\n");
             break;
         case ENERGY:
             if (p->energy == NULL)

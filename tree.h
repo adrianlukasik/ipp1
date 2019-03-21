@@ -31,8 +31,10 @@ void clearData(Tree t);
 /* Znajduje w drzewie t wskaźnik na Tnode związany z history. */
 Tree findTnode(Tree t, char *history, int n);
 
-/* Zwraca adres wskaźnika do pierwszego elementu, który chcemy usunąć. */
-Tree* firstToRemove(Tree t, char *history, int n);
+/* Znajduje element w drzewie t typu Tnode, który nie ma prefiksu history, ale
+ * jeden z jego synów posiada ten prefiks. Jeżeli takiego elementu nie ma, to
+ * zwraca NULL. */
+Tree lastToNotRemove(Tree t, char *history, int n);
 
 /* Dodaje każdy prefiks history do drzewa t. */
 void declareHistory(Tree t, char *history, int n);

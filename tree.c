@@ -33,21 +33,24 @@ void declareHistory(Tree t, char *history, int n) {
             t->state[digitToInt(history[i])] = getNewTnode();
         t = t->state[digitToInt(history[i])];
     }
+
 }
 
-Tree* firstToRemove(Tree t, char *history, int n) {
+Tree lastToNotRemove(Tree t, char *history, int n) {
     for (int i = 0; i < n - 1; i++) {
         if (t->state[digitToInt(history[i])] == NULL)
             return NULL;
         t = t->state[digitToInt(history[i])];
     }
-    return &(t->state[digitToInt(history[n - 1])]);
+    return t;
 }
 
 void removeHistory(Tree t, char *history, int n) {
-    Tree *tree = firstToRemove(t, history, n);
-    clearData(*tree);
-    *tree = NULL;
+    Tree tree = lastToNotRemove(t, history, n);
+    if (tree != NULL) {
+        clearData(tree->state[digitToInt(history[n - 1])]);
+        tree->state[digitToInt(history[n - 1])] = NULL;
+    }
 }
 
 Tree findTnode(Tree t, char *history, int n) {
@@ -64,15 +67,20 @@ bool validHistory(Tree t, char *history, int n) {
 }
 
 void printEnergy(Tree t, char *history, int n) {
+    bool print = false;
     Tree tree = findTnode(t, history, n);
     if (tree != NULL) {
         List list = tree->history;
         if (list != NULL) {
             Root root = list->root;
-            if (root != NULL)
-                printf("%llu\n", root->energy);
+            if (root != NULL) {
+                fprintf(stdout, "%llu\n", root->energy);
+                print = true;
+            }
         }
     }
+    if (!print)
+        fprintf(stderr, "ERROR\n");
 }
 
 void changeEnergy(Tree t, char *history, int n, TYPE_OF_ENERGY energy) {
@@ -86,6 +94,9 @@ void changeEnergy(Tree t, char *history, int n, TYPE_OF_ENERGY energy) {
         } else {
             list->root->energy = energy;
         }
+        fprintf(stdout, "OK\n");
+    } else {
+        fprintf(stderr, "ERROR\n");
     }
 }
 
@@ -114,8 +125,17 @@ void equalHistories(Tree t, char *history_a, int n, char *history_b, int m) {
                         // przepinamy liste a do listy b
                         switchRoot(l_a->root, l_b->root);
                     }
+                    fprintf(stdout, "OK\n");
+                } else {
+                    fprintf(stdout, "OK\n");
                 }
+            } else {
+                fprintf(stderr, "ERROR\n");
             }
+        } else {
+            fprintf(stdout, "OK\n");
         }
+    } else {
+        fprintf(stderr, "ERROR\n");
     }
 }
