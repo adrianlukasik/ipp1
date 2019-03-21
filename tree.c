@@ -1,7 +1,3 @@
-//
-// Created by root on 16.03.19.
-//
-
 #include <stdbool.h>
 #include <stdio.h>
 #include "tree.h"
@@ -115,14 +111,11 @@ void equalHistories(Tree t, char *history_a, int n, char *history_b, int m) {
                     tree_b->history = getNewLnode();
                     addNewElement(l_a->root, tree_b->history);
                 } else if (l_a->root != l_b->root) {
-                    // oba nie sa nullami zatem trzeba zrobic przepinanie
                     int counter_a = l_a->root->counter;
                     int counter_b = l_b->root->counter;
                     if (counter_a > counter_b) {
-                        // przepinamy liste b do listy a
                         switchRoot(l_b->root, l_a->root);
                     } else {
-                        // przepinamy liste a do listy b
                         switchRoot(l_a->root, l_b->root);
                     }
                 }

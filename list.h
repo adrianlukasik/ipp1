@@ -1,7 +1,3 @@
-//
-// Created by root on 16.03.19.
-//
-
 #ifndef MALE_ZADANIE1_LIST_H
 #define MALE_ZADANIE1_LIST_H
 

@@ -1,7 +1,6 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <assert.h>
-#include "tree.h"
 #include "parse.h"
 
 #define SIZE_OF_DATA 8

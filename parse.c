@@ -1,7 +1,3 @@
-//
-// Created by root on 14.03.19.
-//
-
 #include <string.h>
 #include <ctype.h>
 #include <stdio.h>
@@ -9,7 +5,6 @@
 #include <stdlib.h>
 #include <assert.h>
 #include "parse.h"
-#include "tree.h"
 
 #define MAX_NUMBER_OF_DIGITS_ENERGY 20
 
@@ -86,8 +81,7 @@ bool isCandidateToEnergy(char *data, int i, int j) {
     char tmp[j - i + 1];
     for (int k = 0; k < j - i + 1; k++)
         tmp[k] = data[k + i];
-    char maxULongLong[MAX_NUMBER_OF_DIGITS_ENERGY];
-    sprintf(maxULongLong, "%llu", ULLONG_MAX);
+    char maxULongLong[MAX_NUMBER_OF_DIGITS_ENERGY] = "18446744073709551615";
     return strcmp(maxULongLong, tmp) >= 0;
 }
 
@@ -124,10 +118,6 @@ void loadLine(char **data, int *i, int *size) {
 
 int lenOrder(Order order) {
     return strlen(orderToString(order));
-}
-
-void doTestowania(int i) {
-    printf("do testowania %d\n", i);
 }
 
 int nextSpace(char *data, int i, int j) {
@@ -224,7 +214,6 @@ void makeInstruction(char *data, int i, Tree t) {
             indexSpace = nextSpace(data, lenOrder(ENERGY), i - 1);
             if (indexSpace != 0) {
                 indexLastZero = lastZero(data, indexSpace + 1, i - 1);
-                // czyli nie ma zer wiodących
                 if (indexLastZero == indexSpace) {
                     if (isEnergy(data, indexSpace + 1, i - 1)) {
                         energy = stringToEnergy(data, indexSpace + 1, i - 1);
@@ -236,10 +225,6 @@ void makeInstruction(char *data, int i, Tree t) {
                     else {
                         incorrectLine();
                     }
-                    // sprawdzamy czy dla liczb z przedziału [lenOrder(ENERGY), indexSpace - 1] mamy historie
-                    // sprawdzamy czy dla liczb z przedziału [indexSpace + 1, i-1] mamy energie
-
-                    // jesli tak to odpalamy funkcje w p.p. incorrectLine
                 } else {
                     if (isEnergy(data, indexLastZero + 1, i - 1)) {
                         energy = stringToEnergy(data, indexLastZero + 1, i - 1);
@@ -250,9 +235,6 @@ void makeInstruction(char *data, int i, Tree t) {
                     } else {
                         incorrectLine();
                     }
-                    // mamy zera wiodace
-                    // sprawdzamy czy dla liczb z przedziału [lenOrder(ENERGY), indexSpace - 1] mamy historie
-                    // sprawdzamy czy dla liczb z przedziału [indexLastZero + 1, i - 1] mamy energie
                 }
 
             } else {
@@ -269,8 +251,6 @@ void makeInstruction(char *data, int i, Tree t) {
                 else {
                     incorrectLine();
                 }
-                // sprawdzamy czy dla liczb z przedziału [lenOrder(EQUAL) + 1, indexSpace - 1] mamy historie
-                // sprawdzamy czy dla liczb z przedziału [indexSpace + 1, i - 1] mamy historie
             } else {
                 incorrectLine();
             }

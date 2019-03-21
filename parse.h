@@ -1,9 +1,4 @@
-//
-// Created by root on 14.03.19.
-//
-
 #include <stdbool.h>
-#include "list.h"
 #include "tree.h"
 
 #ifndef MALE_ZADANIE1_PARSE_H
