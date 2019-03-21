@@ -114,7 +114,7 @@ void equalHistories(Tree t, char *history_a, int n, char *history_b, int m) {
                 } else if (l_b == NULL) {
                     tree_b->history = getNewLnode();
                     addNewElement(l_a->root, tree_b->history);
-                } else if (l_a->root != l_b->root){
+                } else if (l_a->root != l_b->root) {
                     // oba nie sa nullami zatem trzeba zrobic przepinanie
                     int counter_a = l_a->root->counter;
                     int counter_b = l_b->root->counter;
@@ -125,10 +125,8 @@ void equalHistories(Tree t, char *history_a, int n, char *history_b, int m) {
                         // przepinamy liste a do listy b
                         switchRoot(l_a->root, l_b->root);
                     }
-                    fprintf(stdout, "OK\n");
-                } else {
-                    fprintf(stdout, "OK\n");
                 }
+                fprintf(stdout, "OK\n");
             } else {
                 fprintf(stderr, "ERROR\n");
             }
