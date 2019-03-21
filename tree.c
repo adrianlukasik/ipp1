@@ -89,7 +89,6 @@ void changeEnergy(Tree t, char *history, int n, TYPE_OF_ENERGY energy) {
     }
 }
 
-// warto sprawdzic czy list maja tego samego roota
 void equalHistories(Tree t, char *history_a, int n, char *history_b, int m) {
     Tree tree_a = findTnode(t, history_a, n);
     Tree tree_b = findTnode(t, history_b, m);

@@ -3,9 +3,29 @@
 //
 
 #include <stdbool.h>
+#include "list.h"
+#include "tree.h"
 
 #ifndef MALE_ZADANIE1_PARSE_H
 #define MALE_ZADANIE1_PARSE_H
+
+struct Parameters;
+
+typedef struct Parameters* Parameters;
+
+struct Parameters {
+    char *history_a;
+    int size_a;
+    char *history_b;
+    int size_b;
+    TYPE_OF_ENERGY *energy;
+};
+
+/* Zwraca wskaźnik do nowego elementu typu struct Parameters. */
+Parameters getNewParameters();
+
+/* Kasuje obiekt wskazywany przez p. */
+void removeParameters(Parameters p);
 
 typedef enum Order {
     DECLARE, REMOVE, VALID, ENERGY, EQUAL, TOTAL
@@ -53,6 +73,12 @@ int nextSpace(char *data, int i, int j);
 int lastZero(char *data, int i, int j);
 
 /* Wykonuje polecenie z danymi podanymi w data[0...i]. */
-void makeInstruction(char *data, int i);
+void makeInstruction(char *data, int i, Tree t);
+
+/* Kopiuje napis data[i...j] do elementu history_nr wskazywanego przez p. */
+void copyString(char *data, int i, int j, Parameters p, int nr);
+
+/* Zwraca wartość energii przechowywanej w napisie data[i...j]. */
+TYPE_OF_ENERGY stringToEnergy(char *data, int i, int j);
 
 #endif //MALE_ZADANIE1_PARSE_H

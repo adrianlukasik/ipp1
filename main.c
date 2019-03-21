@@ -22,7 +22,7 @@ int main() {
         if (i < MIN_LENGTH_CORRECT_LINE)
             incorrectLine();
         else
-            makeInstruction(data, i);
+            makeInstruction(data, i, tree);
         size = SIZE_OF_DATA;
         data = realloc(data, size * sizeof(char));
         assert(data);

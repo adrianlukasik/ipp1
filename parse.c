@@ -9,8 +9,31 @@
 #include <stdlib.h>
 #include <assert.h>
 #include "parse.h"
+#include "tree.h"
 
 #define MAX_NUMBER_OF_DIGITS_ENERGY 20
+
+Parameters getNewParameters() {
+    Parameters p = malloc(sizeof(struct Parameters));
+    p->energy = NULL;
+    p->history_a = NULL;
+    p->size_a = 0;
+    p->history_b = NULL;
+    p->size_b = 0;
+    return p;
+}
+
+void removeParameters(Parameters p) {
+    if (p != NULL) {
+        if (p->energy != NULL)
+            free(p->energy);
+        if (p->history_a != NULL)
+            free(p->history_a);
+        if (p->history_b != NULL)
+            free(p->history_b);
+        free(p);
+    }
+}
 
 char* orderToString(Order order) {
     switch (order) {
@@ -124,83 +147,129 @@ int lastZero(char *data, int i, int j) {
     return j;
 }
 
-void rightInstruction(Order order) {
+void rightInstruction(Order order, Parameters p, Tree t) {
     switch (order) {
         case DECLARE:
-            printf("DECLARE!\n");
+            declareHistory(t, p->history_a, p->size_a);
             break;
         case REMOVE:
-            printf("REMOVE!\n");
+            removeHistory(t, p->history_a, p->size_a);
             break;
         case VALID:
-            printf("VALID!\n");
+            if (validHistory(t, p->history_a, p->size_a))
+                fprintf(stdin, "YES\n");
+            else
+                fprintf(stdin, "NO\n");
             break;
         case ENERGY:
-            printf("ENERGY!\n");
+            if (p->energy == NULL)
+                printEnergy(t, p->history_a, p->size_a);
+            else
+                changeEnergy(t, p->history_a, p->size_a, *(p->energy));
             break;
         case EQUAL:
-            printf("EQUAL!\n");
+            equalHistories(t, p->history_a, p->size_a, p->history_b, p->size_b);
             break;
         default:
             break;
     }
 }
 
-void doRightInstruction(char *data, int i, Order order) {
-    if (isQuantumHistory(data, lenOrder(order), i - 1))
-        // todo utworz strukture w ktorej przechowujemy dane do wykoniania
-        rightInstruction(order);
-    else
-        incorrectLine();
+void copyString(char *data, int i, int j, Parameters p, int nr) {
+    if (nr == 1) {
+        p->size_a = j - i + 1;
+        p->history_a = malloc(p->size_a * sizeof(char));
+        for (int k = 0; k < p->size_a; k++)
+            p->history_a[k] = data[i + k];
+    } else if (nr == 2) {
+        p->size_b = j - i + 1;
+        p->history_b = malloc(p->size_b * sizeof(char));
+        for (int k = 0; k < p->size_b; k++)
+            p->history_b[k] = data[i + k];
+    }
 }
-//todo tutaj skonczylem
-void makeInstruction(char *data, int i) {
+
+TYPE_OF_ENERGY stringToEnergy(char *data, int i, int j) {
+    TYPE_OF_ENERGY energy = 0;
+    for (int k = i; k <= j; k++) {
+        energy *= 10;
+        energy += (TYPE_OF_ENERGY)(data[k] - '0');
+    }
+    return energy;
+}
+
+void doRightInstruction(char *data, int i, Order order, Tree t, Parameters p) {
+    if (isQuantumHistory(data, lenOrder(order), i - 1)) {
+        copyString(data, lenOrder(order), i - 1, p, 1);
+        rightInstruction(order, p , t);
+    } else {
+        incorrectLine();
+    }
+}
+
+void makeInstruction(char *data, int i, Tree t) {
     int indexSpace, indexLastZero;
-    /* najpierw sprawdzam 5-8 pierwszych znakow czy tworza
-     * nazwe jakiegos polecenia ze spacją. */
+    TYPE_OF_ENERGY energy;
+    Parameters parameters = getNewParameters();
     switch (whichOrder(data)) {
         case DECLARE:
-            doRightInstruction(data, i, DECLARE);
+            doRightInstruction(data, i, DECLARE, t, parameters);
             break;
         case REMOVE:
-            doRightInstruction(data, i, REMOVE);
+            doRightInstruction(data, i, REMOVE, t, parameters);
             break;
         case VALID:
-            doRightInstruction(data, i, VALID);
+            doRightInstruction(data, i, VALID, t, parameters);
             break;
         case ENERGY:
             indexSpace = nextSpace(data, lenOrder(ENERGY), i - 1);
             if (indexSpace != 0) {
                 indexLastZero = lastZero(data, indexSpace + 1, i - 1);
-                doTestowania(indexSpace);
-                doTestowania(indexLastZero);
                 // czyli nie ma zer wiodących
                 if (indexLastZero == indexSpace) {
-                    if (isEnergy(data, indexSpace + 1, i - 1))
-                        doRightInstruction(data, indexSpace, ENERGY);
-                    else
+                    if (isEnergy(data, indexSpace + 1, i - 1)) {
+                        energy = stringToEnergy(data, indexSpace + 1, i - 1);
+                        parameters->energy = malloc(sizeof(TYPE_OF_ENERGY));
+                        *(parameters->energy) = energy;
+                        doRightInstruction(data, indexSpace, ENERGY, t,
+                                           parameters);
+                    }
+                    else {
                         incorrectLine();
+                    }
                     // sprawdzamy czy dla liczb z przedziału [lenOrder(ENERGY), indexSpace - 1] mamy historie
                     // sprawdzamy czy dla liczb z przedziału [indexSpace + 1, i-1] mamy energie
 
                     // jesli tak to odpalamy funkcje w p.p. incorrectLine
                 } else {
-                    if (isEnergy(data, indexLastZero + 1, i - 1))
-                        doRightInstruction(data, indexSpace, ENERGY);
-                    else
+                    if (isEnergy(data, indexLastZero + 1, i - 1)) {
+                        energy = stringToEnergy(data, indexLastZero + 1, i - 1);
+                        parameters->energy = malloc(sizeof(TYPE_OF_ENERGY));
+                        *(parameters->energy) = energy;
+                        doRightInstruction(data, indexSpace, ENERGY, t,
+                                           parameters);
+                    } else {
                         incorrectLine();
+                    }
                     // mamy zera wiodace
                     // sprawdzamy czy dla liczb z przedziału [lenOrder(ENERGY), indexSpace - 1] mamy historie
                     // sprawdzamy czy dla liczb z przedziału [indexLastZero + 1, i - 1] mamy energie
                 }
 
             } else {
-                doRightInstruction(data, i, ENERGY);
+                doRightInstruction(data, i, ENERGY, t, parameters);
             }
             break;
         case EQUAL:
             indexSpace = nextSpace(data, lenOrder(EQUAL), i - 1);
             if (indexSpace != 0) {
+                if (isQuantumHistory(data, indexSpace + 1, i - 1)) {
+                    copyString(data, indexSpace + 1, i - 1, parameters, 2);
+                    doRightInstruction(data, indexSpace, EQUAL, t, parameters);
+                }
+                else {
+                    incorrectLine();
+                }
                 // sprawdzamy czy dla liczb z przedziału [lenOrder(EQUAL) + 1, indexSpace - 1] mamy historie
                 // sprawdzamy czy dla liczb z przedziału [indexSpace + 1, i - 1] mamy historie
             } else {
@@ -211,4 +280,5 @@ void makeInstruction(char *data, int i) {
             incorrectLine();
             break;
     }
+    removeParameters(parameters);
 }
