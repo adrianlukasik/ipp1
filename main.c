@@ -17,14 +17,13 @@ int main() {
             ignoreLine();
             continue;
         }
-        loadLine(&data, &i, &size);
+        loadLine(&data, &i, &size, tree);
         if (i < MIN_LENGTH_CORRECT_LINE)
             incorrectLine();
         else
             makeInstruction(data, i, tree);
         size = SIZE_OF_DATA;
         data = realloc(data, size * sizeof(char));
-        assert(data);
         i = 1;
     }
     clearData(tree);

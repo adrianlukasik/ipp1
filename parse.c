@@ -78,10 +78,11 @@ bool isNumber(char *data, int i, int j) {
 
 bool isCandidateToEnergy(char *data, int i, int j) {
     if (i > j) return false;
-    char tmp[j - i + 1];
+    char tmp[j - i + 2];
     for (int k = 0; k < j - i + 1; k++)
         tmp[k] = data[k + i];
-    char maxULongLong[MAX_NUMBER_OF_DIGITS_ENERGY] = "18446744073709551615";
+    tmp[j - i + 1] = '\0';
+    char maxULongLong[MAX_NUMBER_OF_DIGITS_ENERGY + 1] = "18446744073709551615";
     return strcmp(maxULongLong, tmp) >= 0;
 }
 
@@ -105,13 +106,17 @@ void ignoreLine() {
     while (getchar() != '\n') {}
 }
 
-void loadLine(char **data, int *i, int *size) {
+void loadLine(char **data, int *i, int *size, Tree tree) {
     while (((*data)[*i] = getchar()) != '\n') {
         ++(*i);
         if (*i == *size) {
             *size *= 2;
             *data = realloc(*data, *size * sizeof(char));
-            assert(*data);
+            if (!(*data)) {
+                printf("Allocation Error\n");
+                clearData(tree);
+                exit(1);
+            }
         }
     }
 }
@@ -187,6 +192,25 @@ TYPE_OF_ENERGY stringToEnergy(char *data, int i, int j) {
     return energy;
 }
 
+void doEnergy(char *data, int i, Tree t, int index, Parameters parameters) {
+    if (isEnergy(data, index + 1, i - 1)) {
+        TYPE_OF_ENERGY energy = stringToEnergy(data, index + 1, i - 1);
+        parameters->energy = malloc(sizeof(TYPE_OF_ENERGY));
+        if (!(parameters->energy)) {
+            printf("Allocation Error\n");
+            free(parameters);
+            clearData(t);
+            free(data);
+            exit(1);
+        }
+        *(parameters->energy) = energy;
+        doRightInstruction(data, index, ENERGY, t, parameters);
+    }
+    else {
+        incorrectLine();
+    }
+}
+
 void doRightInstruction(char *data, int i, Order order, Tree t, Parameters p) {
     if (isQuantumHistory(data, lenOrder(order), i - 1)) {
         copyString(data, lenOrder(order), i - 1, p, 1);
@@ -198,8 +222,13 @@ void doRightInstruction(char *data, int i, Order order, Tree t, Parameters p) {
 
 void makeInstruction(char *data, int i, Tree t) {
     int indexSpace, indexLastZero;
-    TYPE_OF_ENERGY energy;
     Parameters parameters = getNewParameters();
+    if (!parameters) {
+        printf("Allocation Error\n");
+        clearData(t);
+        free(data);
+        exit(1);
+    }
     switch (whichOrder(data)) {
         case DECLARE:
             doRightInstruction(data, i, DECLARE, t, parameters);
@@ -215,26 +244,9 @@ void makeInstruction(char *data, int i, Tree t) {
             if (indexSpace != 0) {
                 indexLastZero = lastZero(data, indexSpace + 1, i - 1);
                 if (indexLastZero == indexSpace) {
-                    if (isEnergy(data, indexSpace + 1, i - 1)) {
-                        energy = stringToEnergy(data, indexSpace + 1, i - 1);
-                        parameters->energy = malloc(sizeof(TYPE_OF_ENERGY));
-                        *(parameters->energy) = energy;
-                        doRightInstruction(data, indexSpace, ENERGY, t,
-                                           parameters);
-                    }
-                    else {
-                        incorrectLine();
-                    }
+                    doEnergy(data, i, t, indexSpace, parameters);
                 } else {
-                    if (isEnergy(data, indexLastZero + 1, i - 1)) {
-                        energy = stringToEnergy(data, indexLastZero + 1, i - 1);
-                        parameters->energy = malloc(sizeof(TYPE_OF_ENERGY));
-                        *(parameters->energy) = energy;
-                        doRightInstruction(data, indexSpace, ENERGY, t,
-                                           parameters);
-                    } else {
-                        incorrectLine();
-                    }
+                    doEnergy(data, i, t, indexLastZero, parameters);
                 }
 
             } else {

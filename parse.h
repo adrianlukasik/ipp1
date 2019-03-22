@@ -55,7 +55,7 @@ void incorrectLine();
 void ignoreLine();
 
 /* Wczytuje dane do tablicy data. */
-void loadLine(char **data, int *i, int *size);
+void loadLine(char **data, int *i, int *size, Tree t);
 
 /* Zwraca długość nazwy polecenia z uwzględnioną spacją. */
 int lenOrder(Order order);
@@ -66,6 +66,14 @@ int nextSpace(char *data, int i, int j);
 
 /* Zwraca pozycję ostatniego zera w podtablicy data[i...j]. */
 int lastZero(char *data, int i, int j);
+
+/* Funkcja pomocnicza funkcji makeInstruction. Sprawdza czy napis
+ * data[(index + 1)...(i-1)] jest energią, a następnie przekazuje go
+ * do zmiennej parameters i wywołuje odpowiednie instrukcje. */
+void doEnergy(char *data, int i, Tree t, int index, Parameters parameters);
+
+/* Wywołuje instrukcje order. */
+void doRightInstruction(char *data, int i, Order order, Tree t, Parameters p);
 
 /* Wykonuje polecenie z danymi podanymi w data[0...i]. */
 void makeInstruction(char *data, int i, Tree t);
