@@ -16,8 +16,6 @@ struct Tnode {
     List history;
 };
 
-int digitToInt(char c);
-
 /* Tworzy nowy Tnode i zwraca wskaźnik do niego. */
 Tree getNewTnode();
 
